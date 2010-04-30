@@ -457,7 +457,7 @@ void IconActionGroup::addSeparator()
 
 bool IconActionGroup::addTo( QWidget *w )
 {
-	if ( w->inherits("Q3PopupMenu") || w->inherits("QMenu") ) {
+	if ( w->inherits("QMenu") ) {
 		QMenu *popup = (QMenu *)w;
 
 		QList<QAction *> list = findChildren<QAction *>();
