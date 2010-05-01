@@ -159,7 +159,6 @@ HEADERS += \
 	$$PWD/infodlg.h \
 	$$PWD/translationmanager.h \
 	$$PWD/eventdb.h \
-	$$PWD/historydlg.h \
 	$$PWD/tipdlg.h \
 	$$PWD/searchdlg.h \
 	$$PWD/registrationdlg.h \
@@ -283,7 +282,6 @@ SOURCES += \
 	$$PWD/infodlg.cpp \
 	$$PWD/translationmanager.cpp \
 	$$PWD/eventdb.cpp \
-	$$PWD/historydlg.cpp \
 	$$PWD/searchdlg.cpp \
 	$$PWD/registrationdlg.cpp \
 	$$PWD/psitoolbar.cpp \
@@ -351,6 +349,20 @@ filetransfer {
 
 	INTERFACES += \
 		$$PWD/filetrans.ui
+}
+
+CONFIG += historydlg2
+historydlg2 {
+	DEFINES += HISTORYDLG2
+	
+	HEADERS += \
+		$$PWD/historydlg2.h
+		
+	SOURCES += \
+		$$PWD/historydlg2.cpp
+		
+	INTERFACES += \
+		$$PWD/historydlg2.ui
 }
 
 CONFIG += groupchat

@@ -42,6 +42,7 @@
 #include <QFrame>
 #include <QList>
 #include <QHostInfo>
+#include <QDebug>
 
 #include "psiaccount.h"
 #include "psiiconset.h"
@@ -90,7 +91,8 @@
 #include "statusdlg.h"
 #include "infodlg.h"
 #include "adduserdlg.h"
-#include "historydlg.h"
+//#include "historydlg.h"
+#include "historydlg2.h"
 #include "capsmanager.h"
 #include "registrationdlg.h"
 #include "searchdlg.h"
@@ -3799,6 +3801,15 @@ void PsiAccount::actionGroupRename(const QString &oldname, const QString &newnam
 
 void PsiAccount::actionHistory(const Jid &j)
 {
+	qDebug() << "Open History Browser";
+	HistoryDlg2 *dlg = findDialog<HistoryDlg2*>(j);
+	if (dlg) {
+		bringToFront(dlg);
+	} else {
+		dlg = new HistoryDlg2(j, this);
+		dlg->show();
+	}
+	/*
 	HistoryDlg *w = findDialog<HistoryDlg*>(j);
 	if(w)
 		bringToFront(w);
@@ -3807,6 +3818,7 @@ void PsiAccount::actionHistory(const Jid &j)
 		connect(w, SIGNAL(openEvent(PsiEvent *)), SLOT(actionHistoryBox(PsiEvent *)));
 		w->show();
 	}
+	*/
 }
 
 void PsiAccount::actionHistoryBox(PsiEvent *e)
