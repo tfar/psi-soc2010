@@ -41,6 +41,7 @@
 #include <QPixmap>
 #include <QFrame>
 #include <QList>
+#include <QQueue>
 #include <QHostInfo>
 
 #include "psiaccount.h"
@@ -482,6 +483,8 @@ public:
 	QList<PsiContact*> contacts;
 	int onlineContactsCount;
 
+	// Stream management
+	QQueue<ChatDlg*> chatdlg_ack_interest;
 private:
 	bool doPopups_;
 
@@ -4225,7 +4228,17 @@ void PsiAccount::dj_sendMessage(const Message &m, bool log)
 		}
 	}
 
-	d->client->sendMessage(nm);
+	// GSOC: stream management
+	// check whether message came from a ChatDlg
+	if (d->client->isStreamManagementActive()) {
+		ChatDlg *chat_dlg = qobject_cast<ChatDlg*>(sender());
+		if (chat_dlg) {
+			d->chatdlg_ack_interest.enqueue(chat_dlg);
+			d->client->sendMessage(nm, true);
+		}
+		else d->client->sendMessage(nm);
+	}
+	else d->client->sendMessage(nm);
 
 	// only toggle if not an invite or body is not empty
 	if(m.invite().isEmpty() && !m.body().isEmpty())
@@ -5065,13 +5078,19 @@ void PsiAccount::processReadNext(const UserListItem &u)
 	updateReadNext(u.jid());
 }
 
+void PsiAccount::messageStanzasAcked(int n) {
+	for (int i=0; i < n; i++) {
+		ChatDlg *chatdlg = d->chatdlg_ack_interest.dequeue();
+		qWarning() << "Inform chat dialog that message has been acked by the server.";
+	}
+}
+
 void PsiAccount::processChatsHelper(const Jid& j, bool removeEvents)
 {
 	//printf("processing chats for [%s]\n", j.full().latin1());
 	ChatDlg *c = findChatDialog(j);
 	if(!c)
 		return;
-
 	// extract the chats
 	QList<PsiEvent*> chatList;
 	bool compareResources = true;
