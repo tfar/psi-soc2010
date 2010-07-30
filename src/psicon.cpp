@@ -53,6 +53,7 @@
 #include "accountregdlg.h"
 #include "combinedtunecontroller.h"
 #include "mucjoindlg.h"
+#include "mucjoindialog.h"
 #include "userlist.h"
 #include "eventdlg.h"
 #ifdef HAVE_PGPUTIL
@@ -792,12 +793,13 @@ void PsiCon::doManageAccounts()
 
 void PsiCon::doGroupChat()
 {
+	fprintf(stderr, "\tMUC DIALOG\n");
 #ifdef GROUPCHAT
 	PsiAccount *account = d->contactList->defaultAccount();
 	if(!account)
 		return;
-
-	MUCJoinDlg *w = new MUCJoinDlg(this, account);
+	//MUCJoinDlg *w = new MUCJoinDlg(this, account);
+	MUCJoinDialog *w = new MUCJoinDialog(this, account);
 	w->show();
 #endif
 }

@@ -218,7 +218,8 @@ HEADERS += \
 	$$PWD/psiactions.h \
 	$$PWD/bookmarkmanagedlg.h \
 	$$PWD/vcardphotodlg.h \
-	$$PWD/psicli.h
+	$$PWD/psicli.h \
+	$$PWD/mucjoindialog.h
 
 
 HEADERS += tabcompletion.h
@@ -337,7 +338,8 @@ SOURCES += \
 	$$PWD/psiaccount.cpp \
 	$$PWD/accountlabel.cpp \
 	$$PWD/bookmarkmanagedlg.cpp \
-	$$PWD/vcardphotodlg.cpp
+	$$PWD/vcardphotodlg.cpp \
+	$$PWD/mucjoindialog.cpp
 
 CONFIG += filetransfer
 filetransfer {
@@ -559,7 +561,8 @@ INTERFACES += \
 	$$PWD/chatdlg.ui \
 	$$PWD/bookmarkmanage.ui \
 	$$PWD/ahcommanddlg.ui \
-	$$PWD/ahcformdlg.ui
+	$$PWD/ahcformdlg.ui \
+	$$PWD/mucjoindialog.ui
 
 # options dialog
 include($$PWD/options/options.pri)
@@ -603,3 +606,9 @@ mac {
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
+
+HEADERS += \
+    recentandbookmarkedroomsmodel.h
+
+SOURCES += \
+    recentandbookmarkedroomsmodel.cpp
