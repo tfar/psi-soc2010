@@ -608,7 +608,9 @@ INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
 HEADERS += \
-    recentandbookmarkedroomsmodel.h
+	recentandbookmarkedroomsmodel.h \
+	serverroomlistmodel.h
 
 SOURCES += \
-    recentandbookmarkedroomsmodel.cpp
+	recentandbookmarkedroomsmodel.cpp \
+	serverroomlistmodel.cpp
