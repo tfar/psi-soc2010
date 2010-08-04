@@ -21,10 +21,14 @@ public:
     ~MUCJoinDialog();
 
 private slots:
+	// UI slots
 	void showOccupantsChanged(int );
 	void updateIdentity(PsiAccount*);
 	void serverListBrowse();
+
+	// MUCUtility slots
 	void receivedMUCService(QString host);
+	void receivedListOfRooms(QString host, QList<MUCUtility::MUCRoom> roomList);
 
 private:
     Ui::MUCJoinDialog *ui;

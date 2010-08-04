@@ -7,11 +7,17 @@ void MUCUtility::determine_muc_disco_items_finished() {
 	Q_ASSERT(jt != NULL);
 	foreach(DiscoItem item, jt->items()) {
 		JT_DiscoInfo *jt_new = new JT_DiscoInfo(account_->client()->rootTask());
-		determine_muc_task_queue_.push_back(jt_new);
+		if (item.jid().full().contains(QRegExp("conference|room|muc|chat")))
+			determine_muc_task_queue_.push_front(jt_new);
+		else
+			determine_muc_task_queue_.push_back(jt_new);
 		connect(jt_new, SIGNAL(finished()), SLOT(determine_muc_disco_finished()));
 		jt_new->get(item.jid());
 	}
-	determine_muc_task_queue_.takeFirst()->go(true);
+	if (!determine_muc_task_queue_.empty())
+		determine_muc_task_queue_.takeFirst()->go(true);
+	else
+		emit receivedMUCService(QString());
 }
 
 void MUCUtility::determine_muc_disco_finished() {
@@ -64,7 +70,6 @@ MUCUtility::MUCUtility(PsiAccount *acc) : QObject(0) {
 void MUCUtility::determineMUCServiceForDomain(const Jid &domain) {
 	JT_DiscoInfo *jt = new JT_DiscoInfo(account_->client()->rootTask());
 	connect(jt, SIGNAL(finished()), SLOT(determine_muc_disco_finished()));
-	fprintf(stderr, "\tdomain: %s\n", domain.domain().toAscii().data());
 	jt->get(domain.domain());
 	jt->go(true);
 }

@@ -27,6 +27,7 @@ MUCJoinDialog::MUCJoinDialog(PsiCon *con, PsiAccount *account) :
 
 MUCJoinDialog::~MUCJoinDialog()
 {
+	if (mutility_) delete mutility_;
     delete ui;
 }
 
@@ -38,7 +39,7 @@ void MUCJoinDialog::initializeUI() {
 	connect(ui->occupantsCheckBox, SIGNAL(stateChanged(int)), SLOT(showOccupantsChanged(int)));
 	ui->identityComboBox->setAccount(account_);
 	updateIdentity(account_);
-} 
+}
 
 void MUCJoinDialog::updateIdentity(PsiAccount *account) {
 	if (account == NULL) return;
@@ -67,4 +68,8 @@ void MUCJoinDialog::receivedMUCService(QString host) {
 		fprintf(stderr, "\tDidn't find MUC.\n");
 	else
 		ui->publicServerJID->setText(host);
+}
+
+void MUCJoinDialog::receivedListOfRooms(QString host, QList<MUCUtility::MUCRoom> roomList) {
+
 }
