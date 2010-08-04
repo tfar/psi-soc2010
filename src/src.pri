@@ -609,8 +609,10 @@ DEPENDPATH += $$PWD
 
 HEADERS += \
 	recentandbookmarkedroomsmodel.h \
-	serverroomlistmodel.h
+	serverroomlistmodel.h \
+	mucutility.h
 
 SOURCES += \
 	recentandbookmarkedroomsmodel.cpp \
-	serverroomlistmodel.cpp
+	serverroomlistmodel.cpp \
+	mucutility.cpp

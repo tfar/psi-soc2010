@@ -18,7 +18,6 @@ signals:
 
 public slots:
 
-
 private:
 	PsiCon *controller_;
 	PsiAccount *account_;
