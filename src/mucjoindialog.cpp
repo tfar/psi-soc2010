@@ -19,6 +19,7 @@ MUCJoinDialog::MUCJoinDialog(PsiCon *con, PsiAccount *account) :
 {
 	controller_ = con;
 	account_ = account;
+	mutility_ = NULL;
 	ui->setupUi(this);
 	setWindowFlags(Qt::Window);
 	initializeUI();
@@ -46,12 +47,24 @@ void MUCJoinDialog::updateIdentity(PsiAccount *account) {
 }
 
 void MUCJoinDialog::serverListBrowse() {
-	QAbstractItemModel *model = ui->publicRoomsList->model();
+	if (mutility_) delete mutility_;
+	mutility_ = new MUCUtility(account_);
+	connect(mutility_, SIGNAL(receivedMUCService(QString)), SLOT(receivedMUCService(QString)));
+	mutility_->determineMUCServiceForDomain(Jid(ui->publicServerJID->text()));
+	/*QAbstractItemModel *model = ui->publicRoomsList->model();
 	ui->publicRoomsList->setModel(new ServerRoomListModel(controller_, account_, ui->publicServerJID->text()));
-	if (model) delete model;
+	if (model) delete model;*/
 }
 
 void MUCJoinDialog::showOccupantsChanged(int state) {
 	ServerRoomListModel *model = qobject_cast<ServerRoomListModel*>(ui->publicRoomsList->model());
 	if (model) model->setShowNumberOfOccupants(state == 2 ? true : false);
+}
+
+void MUCJoinDialog::receivedMUCService(QString host) {
+	fprintf(stderr, "\tresolved to actual MUC component: %s\n", host.toAscii().data());
+	if (host == "")
+		fprintf(stderr, "\tDidn't find MUC.\n");
+	else
+		ui->publicServerJID->setText(host);
 }

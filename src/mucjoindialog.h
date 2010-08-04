@@ -5,6 +5,7 @@
 #include <QAbstractItemModel>
 
 #include "PsiCon.h"
+#include "mucutility.h"
 
 namespace Ui {
     class MUCJoinDialog;
@@ -23,12 +24,15 @@ private slots:
 	void showOccupantsChanged(int );
 	void updateIdentity(PsiAccount*);
 	void serverListBrowse();
+	void receivedMUCService(QString host);
 
 private:
     Ui::MUCJoinDialog *ui;
 
 	PsiCon *controller_;
 	PsiAccount *account_;
+
+	MUCUtility *mutility_;
 
 	void initializeUI();
 };
