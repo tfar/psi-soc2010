@@ -51,7 +51,7 @@ void MUCJoinDialog::serverListBrowse() {
 	if (mutility_) delete mutility_;
 	mutility_ = new MUCUtility(account_);
 	mutility_->setProgressWidget(ui->processBar);
-	connect(mutility_, SIGNAL(receivedMUCService(QString)), SLOT(receivedMUCService(QString)));
+	connect(mutility_, SIGNAL(receivedMUCService(Jid)), SLOT(receivedMUCService(Jid)));
 	mutility_->determineMUCServiceForDomain(Jid(ui->publicServerJID->text()));
 }
 
@@ -60,14 +60,13 @@ void MUCJoinDialog::showOccupantsChanged(int state) {
 	if (model) model->setShowNumberOfOccupants(state == 2 ? true : false);
 }
 
-void MUCJoinDialog::receivedMUCService(QString host) {
-	fprintf(stderr, "\tresolved to actual MUC component: %s\n", host.toAscii().data());
+void MUCJoinDialog::receivedMUCService(Jid host) {
 	if (host == "")
 		fprintf(stderr, "\tDidn't find MUC.\n");
 	else
-		ui->publicServerJID->setText(host);
+		ui->publicServerJID->setText(host.full());
 		QAbstractItemModel *oldModel = ui->publicRoomsList->model();
-		ServerRoomListModel *model = new ServerRoomListModel(controller_, account_, host);
+		ServerRoomListModel *model = new ServerRoomListModel(controller_, account_, host.full());
 		ui->publicRoomsList->setModel(model);
 		if (oldModel) delete oldModel;
 		model->setProgressBar(ui->processBar);

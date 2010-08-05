@@ -14,7 +14,7 @@ class MUCUtility : public QObject
 public:
 	struct MUCRoom {
 		QString name;
-		QString jid;
+		Jid jid;
 		int occupants;
 
 		MUCRoom() { occupants = -1; }

@@ -1,5 +1,7 @@
 #include "serverroomlistmodel.h"
 
+#define MAX_CONCURRENT_REQUESTS 10
+
 int ServerRoomListModel::columnCount(const QModelIndex &parent) const {
 	return 2 + (showOcc_ ? 1 : 0);
 }
@@ -22,7 +24,7 @@ QVariant ServerRoomListModel::data(const QModelIndex &index, int role) const {
 	fprintf(stderr, "\tdata for ( %d | %d )\n", index.column(), index.row());
 	MUCUtility::MUCRoom room = roomList_.at(index.row());
 	if (index.column() == 0) return QVariant(room.name);
-	if (index.column() == 1) return QVariant(room.jid);
+	if (index.column() == 1) return QVariant(room.jid.full());
 	if (index.column() == 2) {
 		if (room.occupants == -1) {
 			ServerRoomListModel *nonconst_this = const_cast<ServerRoomListModel*>(this);
@@ -57,6 +59,7 @@ ServerRoomListModel::ServerRoomListModel(PsiCon *con, PsiAccount *acc, QString d
 	mucutility_ = NULL;
 	progressBar_ = NULL;
 	showOcc_ = false;
+	concurrentRequests_ = 0;
 	setRoom(Jid(domain));
 }
 
@@ -71,8 +74,10 @@ void ServerRoomListModel::setRoom(Jid roomjid) {
 	mucutility_ = new MUCUtility(account_);
 	if (progressBar_) mucutility_->setProgressWidget(progressBar_);
 	connect(mucutility_, SIGNAL(receivedListOfRooms(QList<MUCUtility::MUCRoom>)), SLOT(receivedListOfRooms(QList<MUCUtility::MUCRoom>)));
-	connect(mucutility_, SIGNAL(receivedNoOfOccupants(ulong)), SLOT(receivedNoOfOccupants(ulong)));
+	connect(mucutility_, SIGNAL(receivedNoOfOccupants(Jid,ulong)), SLOT(receivedNoOfOccupants(Jid,ulong)));
 	mucutility_->determineListOfRooms(roomjid_);
+	rowsWithOccupantsInfoFinished_ = rowsWithOccupantsInfoWanted_ = 1;
+	jidToRow_.clear();
 }
 
 void ServerRoomListModel::setShowNumberOfOccupants(bool show) {
@@ -88,25 +93,42 @@ void ServerRoomListModel::receivedListOfRooms(QList<MUCUtility::MUCRoom> roomLis
 	emit endResetModel();
 }
 
+void ServerRoomListModel::updateProgress() {
+	if(progressBar_) {
+		double percentage = (double)rowsWithOccupantsInfoFinished_ / (double)rowsWithOccupantsInfoWanted_ * 100.0;
+		progressBar_->setValue(percentage);
+	}
+}
+
 void ServerRoomListModel::fetchNoOfOccupants(unsigned long row) {
-	if (occupantsRequestList_.empty()) {
-		fprintf(stderr, "\tfetch # of occupants for %s\n", roomList_.at(row).jid.toUtf8().data());
-		occupantsRequestList_.append(row);
+	QString jid = roomList_.at(row).jid.full();
+	if (jidToRow_.contains(jid)) return;
+	++rowsWithOccupantsInfoWanted_;
+	jidToRow_.insert(jid, row);
+	fprintf(stderr, "\tfetch # of occupants for %s\n", roomList_.at(row).jid.full().toUtf8().data());
+	if (concurrentRequests_ <= MAX_CONCURRENT_REQUESTS) {
+		++concurrentRequests_;
 		mucutility_->determineNoOfOccupants(Jid(roomList_.at(row).jid));
 	} else {
 		occupantsRequestList_.append(row);
 	}
+	updateProgress();
 }
 
-void ServerRoomListModel::receivedNoOfOccupants(unsigned long occupants) {
-	Q_ASSERT(!occupantsRequestList_.empty());
-	int result_for_row = occupantsRequestList_.takeFirst();
+void ServerRoomListModel::receivedNoOfOccupants(Jid roomjid, unsigned long occupants) {
+	--concurrentRequests_;
+	int result_for_row = jidToRow_.value(roomjid.full(), -1);
+	Q_ASSERT(result_for_row != -1);
+	//jidToRow_.remove(roomjid.full());
 	MUCUtility::MUCRoom room = roomList_.value(result_for_row);
 	room.occupants = occupants;
 	roomList_[result_for_row] = room;
 	fprintf(stderr, "\tEmit row changed: %d\n", result_for_row);
-	//emit dataChanged(createIndex(result_for_row, 2), createIndex(result_for_row, 2));
+	emit dataChanged(createIndex(result_for_row, 2), createIndex(result_for_row, 2));
 	if (!occupantsRequestList_.empty()) {
-		mucutility_->determineNoOfOccupants(Jid(roomList_.at(occupantsRequestList_.first()).jid));
+		++concurrentRequests_;
+		mucutility_->determineNoOfOccupants(Jid(roomList_.at(occupantsRequestList_.takeFirst()).jid));
 	}
+	++rowsWithOccupantsInfoFinished_;
+	updateProgress();
 }

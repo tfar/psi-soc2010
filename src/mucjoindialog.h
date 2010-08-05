@@ -27,7 +27,7 @@ private slots:
 	void serverListBrowse();
 
 	// MUCUtility slots
-	void receivedMUCService(QString host);
+	void receivedMUCService(Jid host);
 
 private:
     Ui::MUCJoinDialog *ui;

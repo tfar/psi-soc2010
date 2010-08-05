@@ -3,6 +3,7 @@
 
 #include <QAbstractItemModel>
 #include <QProgressBar>
+#include <QHash>
 
 #include "psicon.h"
 #include "psiaccount.h"
@@ -25,7 +26,7 @@ public slots:
 
 private slots:
 	void receivedListOfRooms(QList<MUCUtility::MUCRoom> roomList);
-	void receivedNoOfOccupants(unsigned long no);
+	void receivedNoOfOccupants(Jid roomjid, unsigned long occupants);
 
 private:	
 	PsiCon *controller_;
@@ -35,7 +36,14 @@ private:
 	QList<MUCUtility::MUCRoom> roomList_;
 	Jid roomjid_;
 	QProgressBar *progressBar_;
+
 	QList<int> occupantsRequestList_;
+	QHash<QString, int> jidToRow_;
+	int concurrentRequests_;
+
+	// for progress display
+	int rowsWithOccupantsInfoWanted_;
+	int	rowsWithOccupantsInfoFinished_;
 
 	int columnCount(const QModelIndex &parent) const;
 	int rowCount(const QModelIndex & parent) const;
@@ -44,6 +52,7 @@ private:
 	QModelIndex index(int row, int column, const QModelIndex &parent) const;
 	QModelIndex parent(const QModelIndex &index) const;
 
+	void updateProgress();
 	void fetchNoOfOccupants(unsigned long row);
 };
 
