@@ -26,11 +26,11 @@ void MUCUtility::determine_muc_disco_finished() {
 	Q_ASSERT(jt != NULL);
 	if (jt) {
 		const QList<DiscoItem::Identity> identities = jt->item().identities();
-		QString found_service = "";
+		Jid found_service = "";
 		bool is_server = false;
 		foreach (DiscoItem::Identity ident, identities) {
 			if (ident.category == "conference" &&
-				jt->item().features().canGroupchat()) found_service = jt->jid().full();
+				jt->item().features().canGroupchat()) found_service = jt->jid();
 			if (ident.category == "server") is_server = true;
 		}
 
@@ -78,8 +78,8 @@ void MUCUtility::determine_roomlist_disco_items_finished() {
 void MUCUtility::determine_no_of_occupants_disco_items_finished() {
 	JT_DiscoItems *jt = qobject_cast<JT_DiscoItems*>(sender());
 	Q_ASSERT(jt != NULL);
-	if (!jt->success()) receivedNoOfOccupants(0);
-	emit receivedNoOfOccupants(jt->items().length());
+	if (!jt->success()) receivedNoOfOccupants(jt->jid(), 0);
+	emit receivedNoOfOccupants(jt->jid(), jt->items().length());
 }
 
 void MUCUtility::setProgress(double percent) {

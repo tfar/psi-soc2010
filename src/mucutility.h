@@ -29,9 +29,9 @@ public:
 	void determineListOfRooms(const Jid &domain);
 	void determineNoOfOccupants(const Jid &roomjid);
 signals:
-	void receivedMUCService(QString host);
+	void receivedMUCService(Jid host);
 	void receivedListOfRooms(QList<MUCUtility::MUCRoom> roomList);
-	void receivedNoOfOccupants(unsigned long no);
+	void receivedNoOfOccupants(Jid roomjid, unsigned long number);
 
 private slots:
 	void determine_muc_disco_items_finished();
