@@ -2,9 +2,12 @@
 #define SERVERROOMLISTMODEL_H
 
 #include <QAbstractItemModel>
+#include <QProgressBar>
 
 #include "psicon.h"
 #include "psiaccount.h"
+#include "mucutility.h"
+#include "jidutil.h"
 
 class ServerRoomListModel : public QAbstractItemModel
 {
@@ -13,15 +16,24 @@ public:
 	explicit ServerRoomListModel(QObject *parent = 0);
 	ServerRoomListModel(PsiCon *con, PsiAccount *acc, QString domain);
 
+	void setProgressBar(QProgressBar *pb);
+	void setRoom(Jid roomjid);
 	void setShowNumberOfOccupants(bool show);
 signals:
 
 public slots:
 
+private slots:
+	void receivedListOfRooms(QList<MUCUtility::MUCRoom> roomList);
+
 private:
 	PsiCon *controller_;
 	PsiAccount *account_;
 	bool showOcc_;
+	MUCUtility *mucutility_;
+	QList<MUCUtility::MUCRoom> roomList_;
+	Jid roomjid_;
+	QProgressBar *progressBar_;
 
 	int columnCount(const QModelIndex &parent) const;
 	int rowCount(const QModelIndex & parent) const;

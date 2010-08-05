@@ -28,7 +28,6 @@ private slots:
 
 	// MUCUtility slots
 	void receivedMUCService(QString host);
-	void receivedListOfRooms(QString host, QList<MUCUtility::MUCRoom> roomList);
 
 private:
     Ui::MUCJoinDialog *ui;

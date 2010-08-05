@@ -50,11 +50,9 @@ void MUCJoinDialog::updateIdentity(PsiAccount *account) {
 void MUCJoinDialog::serverListBrowse() {
 	if (mutility_) delete mutility_;
 	mutility_ = new MUCUtility(account_);
+	mutility_->setProgressWidget(ui->processBar);
 	connect(mutility_, SIGNAL(receivedMUCService(QString)), SLOT(receivedMUCService(QString)));
 	mutility_->determineMUCServiceForDomain(Jid(ui->publicServerJID->text()));
-	/*QAbstractItemModel *model = ui->publicRoomsList->model();
-	ui->publicRoomsList->setModel(new ServerRoomListModel(controller_, account_, ui->publicServerJID->text()));
-	if (model) delete model;*/
 }
 
 void MUCJoinDialog::showOccupantsChanged(int state) {
@@ -68,8 +66,9 @@ void MUCJoinDialog::receivedMUCService(QString host) {
 		fprintf(stderr, "\tDidn't find MUC.\n");
 	else
 		ui->publicServerJID->setText(host);
-}
-
-void MUCJoinDialog::receivedListOfRooms(QString host, QList<MUCUtility::MUCRoom> roomList) {
-
+		QAbstractItemModel *oldModel = ui->publicRoomsList->model();
+		ServerRoomListModel *model = new ServerRoomListModel(controller_, account_, host);
+		ui->publicRoomsList->setModel(model);
+		if (oldModel) delete oldModel;
+		model->setProgressBar(ui->processBar);
 }

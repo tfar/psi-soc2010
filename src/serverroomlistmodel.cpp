@@ -40,10 +40,33 @@ ServerRoomListModel::ServerRoomListModel(PsiCon *con, PsiAccount *acc, QString d
 {
 	controller_ = con;
 	account_ = acc;
+	mucutility_ = NULL;
+	progressBar_ = NULL;
 	showOcc_ = false;
+	setRoom(Jid(domain));
+}
+
+void ServerRoomListModel::setProgressBar(QProgressBar *pb) {
+	progressBar_ = pb;
+	mucutility_->setProgressWidget(progressBar_);
+}
+
+void ServerRoomListModel::setRoom(Jid roomjid) {
+	roomjid_ = roomjid;
+	if (mucutility_) delete mucutility_;
+	mucutility_ = new MUCUtility(account_);
+	if (progressBar_) mucutility_->setProgressWidget(progressBar_);
+	connect(mucutility_, SIGNAL(receivedListOfRooms(QList<MUCUtility::MUCRoom>)), SLOT(receivedListOfRooms(QList<MUCUtility::MUCRoom>)));
+	mucutility_->determineListOfRooms(roomjid_);
 }
 
 void ServerRoomListModel::setShowNumberOfOccupants(bool show) {
 	showOcc_ = show;
 	emit headerDataChanged(Qt::Horizontal, 0, 1 + (showOcc_ ? 1 : 0));
+}
+
+// MUCUtility stuff
+void ServerRoomListModel::receivedListOfRooms(QList<MUCUtility::MUCRoom> roomList) {
+	roomList_ = roomList;
+	fprintf(stderr, "\tRECEIVED ROOMS IN MODEL\n");
 }
