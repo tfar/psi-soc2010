@@ -16,6 +16,8 @@ public:
 		QString name;
 		QString jid;
 		int occupants;
+
+		MUCRoom() { occupants = -1; }
 	};
 
 	explicit MUCUtility(QObject *parent = 0);
@@ -29,12 +31,13 @@ public:
 signals:
 	void receivedMUCService(QString host);
 	void receivedListOfRooms(QList<MUCUtility::MUCRoom> roomList);
-	void receivedNoOfOccupants(QString room, unsigned long no);
+	void receivedNoOfOccupants(unsigned long no);
 
 private slots:
 	void determine_muc_disco_items_finished();
 	void determine_muc_disco_finished();
 	void determine_roomlist_disco_items_finished();
+	void determine_no_of_occupants_disco_items_finished();
 
 public slots:
 

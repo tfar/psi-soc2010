@@ -64,7 +64,6 @@ void MUCUtility::determine_muc_disco_finished() {
 void MUCUtility::determine_roomlist_disco_items_finished() {
 	JT_DiscoItems *jt = qobject_cast<JT_DiscoItems*>(sender());
 	Q_ASSERT(jt != NULL);
-	setProgress(100);
 	QList<MUCRoom> roomlist;
 	foreach(DiscoItem item, jt->items()) {
 		MUCRoom room;
@@ -72,7 +71,15 @@ void MUCUtility::determine_roomlist_disco_items_finished() {
 		room.name = item.name();
 		roomlist.append(room);
 	}
+	setProgress(100);
 	emit receivedListOfRooms(roomlist);
+}
+
+void MUCUtility::determine_no_of_occupants_disco_items_finished() {
+	JT_DiscoItems *jt = qobject_cast<JT_DiscoItems*>(sender());
+	Q_ASSERT(jt != NULL);
+	if (!jt->success()) receivedNoOfOccupants(0);
+	emit receivedNoOfOccupants(jt->items().length());
 }
 
 void MUCUtility::setProgress(double percent) {
@@ -115,5 +122,8 @@ void MUCUtility::determineListOfRooms(const Jid &domain) {
 }
 
 void MUCUtility::determineNoOfOccupants(const Jid &roomjid) {
-
+	JT_DiscoItems *jt_items = new JT_DiscoItems(account_->client()->rootTask());
+	connect(jt_items, SIGNAL(finished()), SLOT(determine_no_of_occupants_disco_items_finished()));
+	jt_items->get(roomjid);
+	jt_items->go(true);
 }

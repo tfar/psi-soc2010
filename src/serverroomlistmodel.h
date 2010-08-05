@@ -25,8 +25,9 @@ public slots:
 
 private slots:
 	void receivedListOfRooms(QList<MUCUtility::MUCRoom> roomList);
+	void receivedNoOfOccupants(unsigned long no);
 
-private:
+private:	
 	PsiCon *controller_;
 	PsiAccount *account_;
 	bool showOcc_;
@@ -34,6 +35,7 @@ private:
 	QList<MUCUtility::MUCRoom> roomList_;
 	Jid roomjid_;
 	QProgressBar *progressBar_;
+	QList<int> occupantsRequestList_;
 
 	int columnCount(const QModelIndex &parent) const;
 	int rowCount(const QModelIndex & parent) const;
@@ -42,6 +44,7 @@ private:
 	QModelIndex index(int row, int column, const QModelIndex &parent) const;
 	QModelIndex parent(const QModelIndex &index) const;
 
+	void fetchNoOfOccupants(unsigned long row);
 };
 
 #endif // SERVERROOMLISTMODEL_H
