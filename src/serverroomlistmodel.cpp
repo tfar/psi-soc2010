@@ -5,15 +5,18 @@
 #define MAX_CONCURRENT_REQUESTS 10
 
 int ServerRoomListModel::columnCount(const QModelIndex &parent) const {
+	Q_UNUSED(parent);
 	return 2 + (showOcc_ ? 1 : 0);
 }
 
 int ServerRoomListModel::rowCount(const QModelIndex & parent) const {
+	Q_UNUSED(parent);
 	// return number of rooms
 	return roomList_.length();
 }
 
 QVariant ServerRoomListModel::headerData(int section, Qt::Orientation orientation, int role) const {
+	Q_UNUSED(orientation);
 	if (role != Qt::DisplayRole) return QVariant();
 	if (section == 0) return QVariant("Name");
 	if (section == 1) return QVariant("Room JID");
@@ -23,7 +26,7 @@ QVariant ServerRoomListModel::headerData(int section, Qt::Orientation orientatio
 
 QVariant ServerRoomListModel::data(const QModelIndex &index, int role) const {
 	if (role != Qt::DisplayRole) return QVariant();
-	fprintf(stderr, "\tdata for ( %d | %d )\n", index.column(), index.row());
+	//fprintf(stderr, "\tdata for ( %d | %d )\n", index.column(), index.row());
 	MUCUtility::MUCRoom room = roomList_.at(index.row());
 	if (index.column() == 0) return QVariant(room.name);
 	if (index.column() == 1) return QVariant(room.jid.full());
@@ -40,10 +43,12 @@ QVariant ServerRoomListModel::data(const QModelIndex &index, int role) const {
 }
 
 QModelIndex ServerRoomListModel::index(int row, int column, const QModelIndex &parent) const {
+	Q_UNUSED(parent);
 	return createIndex(row, column, 0);
 }
 
 QModelIndex ServerRoomListModel::parent(const QModelIndex &index) const {
+	Q_UNUSED(index);
 	return QModelIndex();
 }
 
@@ -74,7 +79,7 @@ bool mucRoomOccupantsGreaterThan(const MUCUtility::MUCRoom &r1, const MUCUtility
 
 
 void ServerRoomListModel::sort(int column, Qt::SortOrder order) {
-	fprintf(stderr, "\t column: %d, order: %d\n", column, order);
+	//fprintf(stderr, "\t column: %d, order: %d\n", column, order);
 	if (column == 0) qSort(roomList_.begin(), roomList_.end(), !order ? mucRoomNameLessThan : mucRoomNameGreaterThan);
 	if (column == 1) qSort(roomList_.begin(), roomList_.end(), !order ? mucRoomJidLessThan : mucRoomJidGreaterThan);
 	if (column == 2) qSort(roomList_.begin(), roomList_.end(), !order ? mucRoomOccupantsLessThan : mucRoomOccupantsGreaterThan);
@@ -129,7 +134,6 @@ void ServerRoomListModel::setShowNumberOfOccupants(bool show) {
 
 // MUCUtility stuff
 void ServerRoomListModel::receivedListOfRooms(QList<MUCUtility::MUCRoom> roomList) {
-	fprintf(stderr, "\tRECEIVED ROOMS IN MODEL\n");
 	emit beginResetModel();
 	roomList_ = roomList;
 	emit endResetModel();
@@ -165,7 +169,8 @@ void ServerRoomListModel::receivedNoOfOccupants(Jid roomjid, unsigned long occup
 	MUCUtility::MUCRoom room = roomList_.value(result_for_row);
 	room.occupants = occupants;
 	roomList_[result_for_row] = room;
-	fprintf(stderr, "\tEmit row changed: %d\n", result_for_row);
+	//fprintf(stderr, "\tEmit row changed: %d\n", result_for_row);
+	// TODO: less emits
 	emit dataChanged(createIndex(result_for_row, 2), createIndex(result_for_row, 2));
 	if (!occupantsRequestList_.empty()) {
 		++concurrentRequests_;

@@ -26,6 +26,9 @@ private slots:
 	void updateIdentity(PsiAccount*);
 	void serverListBrowse();
 
+	void cancelButtonClicked();
+	void joinButtonClicked();
+
 	// MUCUtility slots
 	void receivedMUCService(Jid host);
 

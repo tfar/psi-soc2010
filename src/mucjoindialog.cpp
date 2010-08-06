@@ -55,6 +55,14 @@ void MUCJoinDialog::serverListBrowse() {
 	mutility_->determineMUCServiceForDomain(Jid(ui->publicServerJID->text()));
 }
 
+void MUCJoinDialog::cancelButtonClicked() {
+
+}
+
+void MUCJoinDialog::joinButtonClicked() {
+
+}
+
 void MUCJoinDialog::showOccupantsChanged(int state) {
 	ServerRoomListModel *model = qobject_cast<ServerRoomListModel*>(ui->publicRoomsList->model());
 	if (model) model->setShowNumberOfOccupants(state == 2 ? true : false);
