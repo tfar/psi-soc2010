@@ -3,7 +3,7 @@
 
 #include "recentandbookmarkedroomsmodel.h"
 #include "serverroomlistmodel.h"
-
+#include "jidvalidator.h"
 
 MUCJoinDialog::MUCJoinDialog(QWidget *parent) :
     QDialog(parent),
@@ -37,6 +37,10 @@ void MUCJoinDialog::initializeUI() {
 	connect(ui->identityComboBox, SIGNAL(activated(PsiAccount *)), SLOT(updateIdentity(PsiAccount *)));
 	connect(ui->publicServerJID, SIGNAL(returnPressed()), SLOT(serverListBrowse()));
 	connect(ui->occupantsCheckBox, SIGNAL(stateChanged(int)), SLOT(showOccupantsChanged(int)));
+	connect(ui->cancelButton, SIGNAL(clicked()), SLOT(cancelButtonClicked()));
+	connect(ui->joinButton, SIGNAL(clicked()), SLOT(joinButtonClicked()));
+	ui->publicServerJID->setValidator(new JidValidator());
+	ui->roomJIDLineEdit->setValidator(new JidValidator());
 	ui->identityComboBox->setAccount(account_);
 	updateIdentity(account_);
 }

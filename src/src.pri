@@ -616,3 +616,9 @@ SOURCES += \
 	recentandbookmarkedroomsmodel.cpp \
 	serverroomlistmodel.cpp \
 	mucutility.cpp
+
+HEADERS += \
+    jidvalidator.h
+
+SOURCES += \
+    jidvalidator.cpp
