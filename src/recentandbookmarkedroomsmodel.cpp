@@ -43,6 +43,7 @@ RecentAndBookmarkedRoomsModel::RecentAndBookmarkedRoomsModel(QObject *parent) :
 {
 
 }
+
 RecentAndBookmarkedRoomsModel::RecentAndBookmarkedRoomsModel(PsiCon *con, PsiAccount *acc) :
 	QAbstractItemModel(0)
 {
@@ -51,4 +52,17 @@ RecentAndBookmarkedRoomsModel::RecentAndBookmarkedRoomsModel(PsiCon *con, PsiAcc
 
 	recentRooms_ = controller_->recentGCList();
 	bookmarks_ = account_->bookmarkManager()->conferences();
+}
+
+QList<Jid> RecentAndBookmarkedRoomsModel::getJidListForModelIndexList(QModelIndexList selectedIndices) const {
+	QList<Jid> jidList;
+	foreach(QModelIndex index, selectedIndices) {
+		if (index.row() < recentRooms_.length()) {
+			jidList.append(Jid(recentRooms_.at(index.row())));
+		} else {
+			int row = index.row() - recentRooms_.length();
+			jidList.append(bookmarks_.at(row).jid());
+		}
+	}
+	return jidList;
 }

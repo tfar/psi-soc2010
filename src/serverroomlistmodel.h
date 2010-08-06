@@ -20,9 +20,7 @@ public:
 	void setProgressBar(QProgressBar *pb);
 	void setRoom(Jid roomjid);
 	void setShowNumberOfOccupants(bool show);
-signals:
-
-public slots:
+	QList<Jid> getJidListForModelIndexList(QModelIndexList selectedIndices) const;
 
 private slots:
 	void receivedListOfRooms(QList<MUCUtility::MUCRoom> roomList);

@@ -2,10 +2,12 @@
 #define RECENTANDBOOKMARKEDROOMSMODEL_H
 
 #include <QAbstractItemModel>
+#include <QList>
 
 #include "psicon.h"
 #include "psiaccount.h"
 #include "bookmarkmanager.h"
+#include "xmpp_jid.h"
 
 class RecentAndBookmarkedRoomsModel : public QAbstractItemModel
 {
@@ -13,6 +15,8 @@ class RecentAndBookmarkedRoomsModel : public QAbstractItemModel
 public:
     explicit RecentAndBookmarkedRoomsModel(QObject *parent = 0);
 	RecentAndBookmarkedRoomsModel(PsiCon *con, PsiAccount *acc);
+
+	QList<Jid> getJidListForModelIndexList(QModelIndexList selectedIndices) const;
 signals:
 
 public slots:

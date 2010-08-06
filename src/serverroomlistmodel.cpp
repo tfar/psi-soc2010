@@ -132,6 +132,14 @@ void ServerRoomListModel::setShowNumberOfOccupants(bool show) {
 	emit headerDataChanged(Qt::Horizontal, 0, 1 + (showOcc_ ? 1 : 0));
 }
 
+QList<Jid> ServerRoomListModel::getJidListForModelIndexList(QModelIndexList selectedIndices) const {
+	QList<Jid> jidList;
+	foreach(QModelIndex index, selectedIndices) {
+		jidList.append(roomList_.at(index.row()).jid);
+	}
+	return jidList;
+}
+
 // MUCUtility stuff
 void ServerRoomListModel::receivedListOfRooms(QList<MUCUtility::MUCRoom> roomList) {
 	emit beginResetModel();

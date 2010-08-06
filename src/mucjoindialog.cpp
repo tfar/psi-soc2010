@@ -60,11 +60,38 @@ void MUCJoinDialog::serverListBrowse() {
 }
 
 void MUCJoinDialog::cancelButtonClicked() {
-
+	close();
 }
 
 void MUCJoinDialog::joinButtonClicked() {
+	QList<Jid> rooms_to_join;
+	fprintf(stderr, "\tjoinButtonClicked()\n");
 
+	// check manual enter field
+	if (ui->roomJIDLineEdit->hasAcceptableInput()) {
+		rooms_to_join.append(Jid(ui->roomJIDLineEdit->text()));
+	}
+
+	// check bookmark/history view
+	QModelIndexList selected_bookmarks = ui->bookmarksList->selectionModel()->selectedRows();
+	RecentAndBookmarkedRoomsModel *model_book =
+			qobject_cast<RecentAndBookmarkedRoomsModel*>(ui->bookmarksList->model());
+	if (model_book) rooms_to_join << model_book->getJidListForModelIndexList(selected_bookmarks);
+
+	// check server room view
+	QModelIndexList selected_serverrooms = ui->publicRoomsList->selectionModel()->selectedRows();
+	ServerRoomListModel *model_serverrooms =
+			qobject_cast<ServerRoomListModel*>(ui->publicRoomsList->model());
+	if (model_serverrooms) rooms_to_join << model_serverrooms->getJidListForModelIndexList(selected_serverrooms);
+
+	// join rooms - in a non-disturbing away
+	QString nickname = ui->nicknameLineEdit->text();
+	foreach( Jid jid, rooms_to_join) {
+		if (jid.resource() == "") jid = jid.withResource(nickname);
+		fprintf(stderr, "\tJOIN ROOM: %s\n", jid.full().toUtf8().data());
+	}
+	// close dialog
+	close();
 }
 
 void MUCJoinDialog::showOccupantsChanged(int state) {
