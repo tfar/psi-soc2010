@@ -138,6 +138,15 @@
         </item>
         <item>
          <widget class="QTreeView" name="publicRoomsList">
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="showDropIndicator" stdset="0">
+           <bool>false</bool>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
           <property name="selectionMode">
            <enum>QAbstractItemView::MultiSelection</enum>
           </property>
@@ -150,12 +159,12 @@
           <property name="itemsExpandable">
            <bool>false</bool>
           </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
           <property name="expandsOnDoubleClick">
            <bool>false</bool>
           </property>
-          <attribute name="headerShowSortIndicator" stdset="0">
-           <bool>true</bool>
-          </attribute>
          </widget>
         </item>
        </layout>

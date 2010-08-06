@@ -1,5 +1,7 @@
 #include "serverroomlistmodel.h"
 
+#include <QtAlgorithms>
+
 #define MAX_CONCURRENT_REQUESTS 10
 
 int ServerRoomListModel::columnCount(const QModelIndex &parent) const {
@@ -43,6 +45,46 @@ QModelIndex ServerRoomListModel::index(int row, int column, const QModelIndex &p
 
 QModelIndex ServerRoomListModel::parent(const QModelIndex &index) const {
 	return QModelIndex();
+}
+
+bool mucRoomNameLessThan(const MUCUtility::MUCRoom &r1, const MUCUtility::MUCRoom &r2) {
+	return r1.name.toLower() < r2.name.toLower();
+}
+
+bool mucRoomJidLessThan(const MUCUtility::MUCRoom &r1, const MUCUtility::MUCRoom &r2) {
+	return r1.jid.full() < r2.jid.full();
+}
+
+bool mucRoomOccupantsLessThan(const MUCUtility::MUCRoom &r1, const MUCUtility::MUCRoom &r2) {
+	return r1.occupants < r2.occupants;
+}
+
+bool mucRoomNameGreaterThan(const MUCUtility::MUCRoom &r1, const MUCUtility::MUCRoom &r2) {
+	return r1.name.toLower() > r2.name.toLower();
+}
+
+bool mucRoomJidGreaterThan(const MUCUtility::MUCRoom &r1, const MUCUtility::MUCRoom &r2) {
+	return r1.jid.full() > r2.jid.full();
+}
+
+bool mucRoomOccupantsGreaterThan(const MUCUtility::MUCRoom &r1, const MUCUtility::MUCRoom &r2) {
+	return r1.occupants > r2.occupants;
+}
+
+
+
+void ServerRoomListModel::sort(int column, Qt::SortOrder order) {
+	fprintf(stderr, "\t column: %d, order: %d\n", column, order);
+	if (column == 0) qSort(roomList_.begin(), roomList_.end(), !order ? mucRoomNameLessThan : mucRoomNameGreaterThan);
+	if (column == 1) qSort(roomList_.begin(), roomList_.end(), !order ? mucRoomJidLessThan : mucRoomJidGreaterThan);
+	if (column == 2) qSort(roomList_.begin(), roomList_.end(), !order ? mucRoomOccupantsLessThan : mucRoomOccupantsGreaterThan);
+
+	// get jidToRow_ in sync
+	for (int n = 0; n < roomList_.length(); ++n) {
+		MUCUtility::MUCRoom room = roomList_.at(n);
+		if (jidToRow_.contains(room.jid.full())) jidToRow_.insert(room.jid.full(), n);
+	}
+	emit layoutChanged();
 }
 
 ServerRoomListModel::ServerRoomListModel(QObject *parent) :
@@ -105,7 +147,7 @@ void ServerRoomListModel::fetchNoOfOccupants(unsigned long row) {
 	if (jidToRow_.contains(jid)) return;
 	++rowsWithOccupantsInfoWanted_;
 	jidToRow_.insert(jid, row);
-	fprintf(stderr, "\tfetch # of occupants for %s\n", roomList_.at(row).jid.full().toUtf8().data());
+	//fprintf(stderr, "\tfetch # of occupants for %s\n", roomList_.at(row).jid.full().toUtf8().data());
 	if (concurrentRequests_ <= MAX_CONCURRENT_REQUESTS) {
 		++concurrentRequests_;
 		mucutility_->determineNoOfOccupants(Jid(roomList_.at(row).jid));

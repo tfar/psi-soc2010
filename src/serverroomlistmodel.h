@@ -52,6 +52,8 @@ private:
 	QModelIndex index(int row, int column, const QModelIndex &parent) const;
 	QModelIndex parent(const QModelIndex &index) const;
 
+	void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
+
 	void updateProgress();
 	void fetchNoOfOccupants(unsigned long row);
 };
