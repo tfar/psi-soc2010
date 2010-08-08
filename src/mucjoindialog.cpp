@@ -4,6 +4,7 @@
 #include "recentandbookmarkedroomsmodel.h"
 #include "serverroomlistmodel.h"
 #include "jidvalidator.h"
+#include "mucjoindlg.h"
 
 MUCJoinDialog::MUCJoinDialog(QWidget *parent) :
     QDialog(parent),
@@ -89,6 +90,13 @@ void MUCJoinDialog::joinButtonClicked() {
 	foreach( Jid jid, rooms_to_join) {
 		if (jid.resource() == "") jid = jid.withResource(nickname);
 		fprintf(stderr, "\tJOIN ROOM: %s\n", jid.full().toUtf8().data());
+		MUCJoinDlg* w = new MUCJoinDlg(controller_, account_);
+
+		w->setJid(jid);
+		w->setNick(jid.resource());
+
+		w->show();
+		w->doJoin();
 	}
 	// close dialog
 	close();
