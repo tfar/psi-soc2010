@@ -44,6 +44,8 @@ void MUCJoinDialog::initializeUI() {
 	ui->roomJIDLineEdit->setValidator(new JidValidator());
 	ui->identityComboBox->setAccount(account_);
 	updateIdentity(account_);
+	ui->publicServerJID->setText(account_->jid().domain());
+	serverListBrowse();
 }
 
 void MUCJoinDialog::updateIdentity(PsiAccount *account) {
@@ -114,6 +116,7 @@ void MUCJoinDialog::receivedMUCService(Jid host) {
 		ui->publicServerJID->setText(host.full());
 		QAbstractItemModel *oldModel = ui->publicRoomsList->model();
 		ServerRoomListModel *model = new ServerRoomListModel(controller_, account_, host.full());
+		model->setShowNumberOfOccupants(ui->occupantsCheckBox->checkState() == 2 ? true : false);
 		ui->publicRoomsList->setModel(model);
 		if (oldModel) delete oldModel;
 		model->setProgressBar(ui->processBar);
