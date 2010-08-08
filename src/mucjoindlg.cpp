@@ -84,8 +84,8 @@ MUCJoinDlg::~MUCJoinDlg()
 		account_->dialogUnregister(this);
 }
 
-void MUCJoinDlg::setAutoHiding(bool autoHidingOn = true) {
-	autoHiding_ = autoHidingOn;
+void MUCJoinDlg::setAutoHiding(bool autoHidingOn) {
+	autoHinding_ = autoHidingOn;
 }
 
 void MUCJoinDlg::done(int r)

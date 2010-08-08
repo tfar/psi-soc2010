@@ -338,7 +338,7 @@ public slots:
 	void actionSearch(const Jid &);
 	void actionManageBookmarks();
 	void actionJoin(const Jid& mucJid, const QString& password = QString());
-	void actionJoin(const ConferenceBookmark& bookmark, bool connectImmediately);
+	void actionJoin(const ConferenceBookmark& bookmark, bool connectImmediately, bool autoHide = false);
 	void actionDisco(const Jid &, const QString &);
 	void actionInvite(const Jid &, const QString &);
 	void actionVoice(const Jid&);

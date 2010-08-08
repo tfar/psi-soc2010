@@ -91,13 +91,12 @@ void MUCJoinDialog::joinButtonClicked() {
 	QString nickname = ui->nicknameLineEdit->text();
 	foreach( Jid jid, rooms_to_join) {
 		if (jid.resource() == "") jid = jid.withResource(nickname);
-		fprintf(stderr, "\tJOIN ROOM: %s\n", jid.full().toUtf8().data());
 		MUCJoinDlg* w = new MUCJoinDlg(controller_, account_);
 
 		w->setJid(jid);
 		w->setNick(jid.resource());
 
-		w->show();
+		w->setAutoHiding();
 		w->doJoin();
 	}
 	// close dialog

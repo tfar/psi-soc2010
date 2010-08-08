@@ -2204,7 +2204,7 @@ void PsiAccount::bookmarksAvailabilityChanged()
 #ifdef GROUPCHAT
 	foreach(ConferenceBookmark c, d->bookmarkManager->conferences()) {
 		if (!findDialog<GCMainDlg*>(Jid(c.jid().bare())) && c.autoJoin()) {
-			actionJoin(c, true);
+			actionJoin(c, true, true);
 		}
 	}
 #endif
@@ -3189,18 +3189,19 @@ void PsiAccount::actionJoin(const Jid& mucJid, const QString& password)
 	           false);
 }
 
-void PsiAccount::actionJoin(const ConferenceBookmark& bookmark, bool connectImmediately)
+void PsiAccount::actionJoin(const ConferenceBookmark& bookmark, bool connectImmediately, bool autoHide)
 {
 #ifdef GROUPCHAT
 	MUCJoinDlg* w = new MUCJoinDlg(psi(), this);
-
+	w->setAutoHiding(autoHide);
 	w->setJid(bookmark.jid());
 	w->setNick(bookmark.nick().isEmpty() ? d->jid.node() : bookmark.nick());
 	w->setPassword(bookmark.password());
 
-	w->show();
 	if (connectImmediately) {
 		w->doJoin();
+	} else {
+		w->show();
 	}
 #else
 	Q_UNUSED(bookmark);
