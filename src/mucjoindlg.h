@@ -39,6 +39,8 @@ public:
 	MUCJoinDlg(PsiCon *, PsiAccount *);
 	~MUCJoinDlg();
 
+	void setAutoHiding(bool autoHidingOn = true);
+
 	void setJid(const XMPP::Jid& jid);
 	void setNick(const QString nick);
 	void setPassword(const QString& password);
@@ -65,6 +67,7 @@ private:
 	PsiAccount* account_;
 	QPushButton* joinButton_;
 	XMPP::Jid jid_;
+	bool autoHinding_;
 
 	void disableWidgets();
 	void enableWidgets();

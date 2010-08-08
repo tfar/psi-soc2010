@@ -38,6 +38,7 @@ MUCJoinDlg::MUCJoinDlg(PsiCon* psi, PsiAccount* pa)
 	ui_.setupUi(this);
 	controller_ = psi;
 	account_ = 0;
+	autoHinding_ = false;
 	controller_->dialogRegister(this);
 	ui_.ck_history->setChecked(true);
 	ui_.ck_history->hide();
@@ -81,6 +82,10 @@ MUCJoinDlg::~MUCJoinDlg()
 		controller_->dialogUnregister(this);
 	if (account_)
 		account_->dialogUnregister(this);
+}
+
+void MUCJoinDlg::setAutoHiding(bool autoHidingOn = true) {
+	autoHiding_ = autoHidingOn;
 }
 
 void MUCJoinDlg::done(int r)
@@ -137,6 +142,7 @@ void MUCJoinDlg::recent_activated(int x)
 
 void MUCJoinDlg::doJoin()
 {
+	if (autoHinding_) hide();
 	if (!account_ || !account_->checkConnected(this))
 		return;
 
@@ -199,6 +205,7 @@ void MUCJoinDlg::joined()
 
 void MUCJoinDlg::error(int, const QString &str)
 {
+	if (autoHinding_) show();
 	ui_.busy->stop();
 	setWidgetsEnabled(true);
 
